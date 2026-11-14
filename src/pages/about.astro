@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="About TempMail" description="Why TempMail exists and how the service works.">
+  <article class="page-wrap prose-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>About</span></nav>
+    <p class="eyebrow">About the project</p>
+    <h1>A smaller footprint for one-off email.</h1>
+    <p class="page-lede">TempMail is a simple interface for a temporary inbox. It is designed to help people separate low-stakes sign-ups from an everyday email address.</p>
+    <h2>How it works</h2>
+    <p>When you open the mailbox, TempMail calls the Guerrilla Mail JSON API from a Cloudflare Pages Function. Guerrilla Mail creates and manages the address and its messages. This site does not operate its own mail server.</p>
+    <h2>What it is—and is not</h2>
+    <p>A disposable email address can reduce unwanted follow-up to a personal inbox. It is not an anonymity service, a secure mailbox, or a substitute for an address you need to retain. Messages are held by the provider, and other users may be able to access an address after it becomes available again.</p>
+    <h2>Design principles</h2>
+    <ul><li>Explain the service and its limits plainly.</li><li>Keep the interface lightweight and usable on small screens.</li><li>Do not add tracking scripts or retain message contents in this application.</li><li>Use the provider's documented operations rather than pretending unsupported actions work.</li></ul>
+    <p>Learn more about <a href="/privacy/">privacy and data handling</a> or see the <a href="/faq/">frequently asked questions</a>.</p>
+  </article>
+</BaseLayout>

@@ -1,0 +1,90 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  headings: Array<{ depth: number; slug: string; text: string }>;
+  related: CollectionEntry<"blog">[];
+  previous?: CollectionEntry<"blog">;
+  next?: CollectionEntry<"blog">;
+}
+
+const { post, headings, related, previous, next } = Astro.props;
+const { title, description, author, pubDate, updatedDate, categories, tags, featuredImage } = post.data;
+const published = pubDate.toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+const updated = updatedDate?.toLocaleDateString("en", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+const readMinutes = Math.max(1, Math.ceil((post.body ?? "").split(/\s+/).length / 220));
+const canonical = new URL(`/blog/${post.id}/`, Astro.site).toString();
+const articleSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate || pubDate).toISOString(),
+  author: { "@type": "Organization", name: author },
+  mainEntityOfPage: canonical,
+  ...(featuredImage ? { image: new URL(featuredImage, Astro.site).toString() } : {}),
+}).replace(/</g, "\\u003c");
+---
+
+<BaseLayout title={`${title} — TempMail`} description={description} ogType="article" image={featuredImage}>
+  <script type="application/ld+json" set:html={articleSchema}></script>
+  <div class="reading-progress" aria-hidden="true" data-reading-progress></div>
+  <article class="article-shell">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span>{title}</span>
+    </nav>
+    <header class="article-header">
+      <p class="eyebrow">{categories.join(" · ")}</p>
+      <h1>{title}</h1>
+      <p class="article-deck">{description}</p>
+      <div class="article-byline">
+        <span>{author}</span>
+        <time datetime={pubDate.toISOString()}>{published}</time>
+        {updated && <span>Updated {updated}</span>}
+        <span>{readMinutes} min read</span>
+      </div>
+      {featuredImage && <img class="article-featured-image" src={featuredImage} alt="" width="960" height="420" fetchpriority="high" />}
+    </header>
+    <div class="article-grid">
+      <aside class="article-toc" aria-label="Table of contents">
+        <p class="eyebrow">On this page</p>
+        <nav>
+          <ul>
+            {headings.filter((heading) => heading.depth <= 3).map((heading) => (
+              <li class:list={[heading.depth === 3 && "toc-nested"]}><a href={`#${heading.slug}`}>{heading.text}</a></li>
+            ))}
+          </ul>
+        </nav>
+      </aside>
+      <div class="article-content">
+        <slot />
+        <div class="tag-list" aria-label="Article tags">
+          {tags.map((tag) => <span class="tag">{tag}</span>)}
+        </div>
+        <div class="share-links">
+          <span>Share this article</span>
+          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(canonical)}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href={`https://www.reddit.com/submit?url=${encodeURIComponent(canonical)}&title=${encodeURIComponent(title)}`} target="_blank" rel="noopener noreferrer">Reddit</a>
+          <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(canonical)}`}>Email</a>
+        </div>
+      </div>
+    </div>
+    <nav class="article-neighbors" aria-label="More articles">
+      {previous && <a href={`/blog/${previous.id}/`}><span>Previous</span><strong>{previous.data.title}</strong></a>}
+      {next && <a href={`/blog/${next.id}/`}><span>Next</span><strong>{next.data.title}</strong></a>}
+    </nav>
+    {related.length > 0 && (
+      <section class="related-section">
+        <div class="section-heading"><div><p class="eyebrow">Keep reading</p><h2>Related articles</h2></div></div>
+        <div class="article-card-grid">{related.map((item) => <ArticleCard post={item} />)}</div>
+      </section>
+    )}
+  </article>
+  <script>
+    import "../scripts/article.js";
+  </script>
+</BaseLayout>

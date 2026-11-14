@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const questions = [
+  ["Does TempMail create a real address?", "Yes. The address shown is returned by Guerrilla Mail's API. TempMail does not invent a local-only address."],
+  ["How long does an address last?", "Guerrilla Mail's API documentation describes a 60-minute lifetime for a non-subscriber address and a limited extend operation. The provider controls expiry, so the countdown is an estimate."],
+  ["Will my inbox come back after a reload?", "The provider session cookie is stored as an HttpOnly cookie on this site, and the address and timestamp are cached in your browser's local storage. A provider session can expire after roughly 18 minutes without activity; if it does, you may need a new address."],
+  ["How often does the inbox refresh?", "The page checks every 30 seconds while visible and the mailbox session is active. You can also refresh manually. Guerrilla Mail does not publish a numeric API rate limit, so use the service reasonably."],
+  ["Can I delete an email?", "Yes. Guerrilla Mail documents a del_email API operation. The delete control is enabled for messages the provider returns; the provider remains responsible for confirming the deletion."],
+  ["Can I extend an address?", "The provider documents an extend operation, allowing up to two hours of extension. Availability depends on provider response."],
+  ["Does TempMail make me anonymous?", "No. The provider's API expects the visitor IP address and user-agent, and the provider processes the address and messages. Cloudflare also processes requests to host this website. Do not use TempMail to conceal identity or handle sensitive accounts."],
+  ["Can I use it for passwords or account recovery?", "We strongly recommend against it. An address or message may be available to others, and an expired inbox may not be recoverable."],
+  ["Why did an address or message disappear?", "The provider controls mailbox lifetime and retention. Its documentation says messages expire after about an hour. Provider availability and behavior can change."],
+];
+const faqSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: questions.map(([question, answer]) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: { "@type": "Answer", text: answer },
+  })),
+}).replace(/</g, "\\u003c");
+---
+
+<BaseLayout title="FAQ — TempMail" description="Straight answers about disposable email, mailbox sessions, message deletion, and privacy.">
+  <script type="application/ld+json" set:html={faqSchema}></script>
+  <article class="page-wrap prose-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>FAQ</span></nav>
+    <p class="eyebrow">Frequently asked questions</p>
+    <h1>Useful details, before you use it.</h1>
+    <p class="page-lede">Temporary email is convenient, but it has real limitations. Here is what to expect from this site and its provider.</p>
+    <div class="faq-list faq-page">{questions.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}</div>
+  </article>
+</BaseLayout>

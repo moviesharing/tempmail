@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "tempmail",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-11-14",
+  "ratelimits": [
+    {
+      "name": "MAILBOX_RATE_LIMITER",
+      "namespace_id": "730241",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    }
+  ]
+}

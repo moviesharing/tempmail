@@ -1,0 +1,41 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+
+const posts = (await getCollection("blog")).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const pageSize = 2;
+const pages = Math.ceil(posts.length / pageSize);
+const visible = posts.slice(0, pageSize);
+const categories = [...new Set(posts.flatMap((post) => post.data.categories))].sort();
+---
+
+<BaseLayout title="The TempMail Blog" description="Practical notes on temporary email, online privacy, and safer email habits.">
+  <div class="page-wrap archive-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Blog</span></nav>
+    <header class="archive-header">
+      <p class="eyebrow">Field notes</p>
+      <h1>Small guides for a more considered inbox.</h1>
+      <p>Practical explanations of disposable email, privacy trade-offs, and email security—without promises a mailbox cannot keep.</p>
+    </header>
+    <div class="archive-tools">
+      <label class="search-field"><span class="sr-only">Search articles</span><input type="search" placeholder="Search articles…" autocomplete="off" data-blog-search /><span aria-hidden="true">⌕</span></label>
+      <nav class="category-links" aria-label="Article categories">
+        <a href="/blog/category/">All topics</a>
+        {categories.map((category) => <a href={`/blog/category/${category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}/`}>{category}</a>)}
+      </nav>
+    </div>
+    <div class="article-card-grid archive-grid">
+      {visible.map((post) => <ArticleCard post={post} />)}
+    </div>
+    <p class="search-empty" data-search-empty hidden>No articles match that search. Try another word.</p>
+    <nav class="pagination" aria-label="Blog pages">
+      <span aria-current="page">1</span>
+      {pages > 1 && <a href="/blog/page/2/">2</a>}
+      {pages > 1 && <a href="/blog/page/2/" aria-label="Next page">Next →</a>}
+    </nav>
+  </div>
+  <script>
+    import "../../scripts/blog-search.js";
+  </script>
+</BaseLayout>

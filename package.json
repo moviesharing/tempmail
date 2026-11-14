@@ -1,0 +1,25 @@
+{
+  "name": "tempmail",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node --test",
+    "dev:pages": "npm run build && npx --yes wrangler@4.162.0 pages dev dist --ip 127.0.0.1 --port 8788",
+    "deploy": "npm run build && npx --yes wrangler@4.162.0 pages deploy dist --project-name tempmail"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^7.4.12",
+    "dompurify": "^3.2.6",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.9.2"
+  }
+}

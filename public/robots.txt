@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /blog/page/
+Sitemap: https://tempmail.pages.dev/sitemap-index.xml

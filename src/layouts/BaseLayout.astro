@@ -1,0 +1,59 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  ogType?: "website" | "article";
+  image?: string;
+}
+
+const { title, description, noindex = false, ogType = "website", image = "/images/inbox-notes.svg" } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const socialImage = new URL(image, Astro.site).toString();
+const websiteSchema = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "TempMail",
+  url: Astro.site,
+  description: "A temporary inbox for the moments you need one.",
+}).replace(/</g, "\\u003c");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="TempMail" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <script type="application/ld+json" set:html={websiteSchema}></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import "../scripts/theme.js";
+    </script>
+  </body>
+</html>

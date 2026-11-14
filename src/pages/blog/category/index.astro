@@ -1,0 +1,21 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+const posts = await getCollection("blog");
+const categories = [...new Set(posts.flatMap((post) => post.data.categories))].sort();
+const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+---
+
+<BaseLayout title="Blog Categories — TempMail" description="Explore TempMail articles by subject.">
+  <div class="page-wrap archive-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/blog/">Blog</a><span>/</span><span>Topics</span></nav>
+    <header class="archive-header"><p class="eyebrow">Browse by subject</p><h1>Topics</h1><p>Choose an area to find related guides and notes.</p></header>
+    <div class="category-index">
+      {categories.map((category) => {
+        const matching = posts.filter((post) => post.data.categories.includes(category));
+        return <a class="category-index-item" href={`/blog/category/${slugify(category)}/`}><span><strong>{category}</strong><small>{matching.length} {matching.length === 1 ? "article" : "articles"}</small></span><span aria-hidden="true">→</span></a>;
+      })}
+    </div>
+  </div>
+</BaseLayout>

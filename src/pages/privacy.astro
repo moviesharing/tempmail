@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Privacy Policy — TempMail" description="What TempMail, Cloudflare, and Guerrilla Mail process when you use a temporary inbox.">
+  <article class="page-wrap prose-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Privacy</span></nav>
+    <p class="eyebrow">Privacy policy</p>
+    <h1>Privacy is about knowing who handles what.</h1>
+    <p class="page-lede">Last reviewed November 14, 2026. A temporary address can reduce what you share with a website, but it does not make your activity anonymous.</p>
+    <h2>Mailbox provider</h2>
+    <p>TempMail uses Guerrilla Mail for address creation, inbox checks, message retrieval, address changes, extensions, and message deletion. Its public API documentation requires the visitor's IP address and user-agent to be supplied with each call. The provider receives and processes the address and messages, and controls their retention. Guerrilla Mail describes non-subscriber addresses as lasting about 60 minutes, messages as expiring after about an hour, and sessions as expiring after roughly 18 minutes of inactivity. These are provider statements and can change.</p>
+    <h2>Cookies and browser storage</h2>
+    <p>The Cloudflare Function forwards Guerrilla Mail's PHPSESSID as an HttpOnly, SameSite=Strict cookie scoped to <code>/api</code>. Browser JavaScript cannot read this cookie. It expires after about 18 minutes and is refreshed when mailbox requests succeed. The browser's local storage keeps the current email address and its timestamp so the page can show which address it is attempting to restore after a reload. A separate local-storage preference remembers light or dark theme. You can clear either by clearing this site's browser data.</p>
+    <h2>Messages and application logs</h2>
+    <p>Message content is fetched only when you open a message and is displayed in a sandboxed frame. This application does not write message bodies to application logs or store them in its own database. The provider processes message content, and Cloudflare processes network requests to deliver this site and its API function. Cloudflare may process or retain operational request data under its own policies and the site's account settings; TempMail does not promise zero logging.</p>
+    <h2>Third parties and analytics</h2>
+    <p>The mailbox function makes requests to Guerrilla Mail. The site does not include an analytics script, advertising network, or external font request. Opening a social sharing link on an article takes you to the third-party service you selected.</p>
+    <h2>Your choices and risks</h2>
+    <p>Do not send confidential information to a temporary mailbox. Addresses may be reused or accessible to others; do not rely on one for account recovery, financial services, health services, or any account you need to keep. Deleting a message through the provider API does not guarantee removal from every system or backup controlled by the provider.</p>
+    <h2>Changes and contact</h2>
+    <p>This policy may be updated when the implementation or provider behavior changes. For questions about the provider's processing, contact Guerrilla Mail at <a href="mailto:support@guerrillamail.com">support@guerrillamail.com</a>. See the <a href="/contact/">contact page</a> for site-related information.</p>
+  </article>
+</BaseLayout>

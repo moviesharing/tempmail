@@ -1,0 +1,30 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ArticleCard from "../../../components/ArticleCard.astro";
+
+const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const categories = [...new Set(posts.flatMap((post) => post.data.categories))];
+  return categories.map((category) => ({
+    params: { category: slugify(category) },
+    props: { category, title: category },
+  }));
+}
+
+const { category, title } = Astro.props;
+const posts = (await getCollection("blog")).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const matching = posts.filter((post) => post.data.categories.some((item) => slugify(item) === category));
+---
+
+<BaseLayout title={`${title} — TempMail Blog`} description={`TempMail articles about ${title.toLowerCase()}.`}>
+  <div class="page-wrap archive-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/blog/">Blog</a><span>/</span><a href="/blog/category/">Topics</a><span>/</span><span>{title}</span></nav>
+    <header class="archive-header"><p class="eyebrow">Topic</p><h1>{title}</h1><p>Guides and notes filed under {title.toLowerCase()}.</p></header>
+    <div class="article-card-grid archive-grid">{matching.map((post) => <ArticleCard post={post} />)}</div>
+    <a class="text-link back-link" href="/blog/category/">Browse all topics <span aria-hidden="true">→</span></a>
+  </div>
+</BaseLayout>
