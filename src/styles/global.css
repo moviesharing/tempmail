@@ -734,6 +734,13 @@ img {
   color: var(--muted);
 }
 
+.reader-unavailable {
+  margin: 0;
+  padding: 1.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .mailbox-notice,
 .mailbox-error {
   margin: 0;

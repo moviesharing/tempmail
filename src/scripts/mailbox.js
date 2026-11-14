@@ -236,12 +236,22 @@ if (root) {
     return parsed.body.textContent?.trim() || "";
   }
 
-  function safeEmailDocument(html) {
-    const clean = DOMPurify.sanitize(html, {
+  function sanitizeEmailHtml(html) {
+    return DOMPurify.sanitize(html, {
       USE_PROFILES: { html: true },
       FORBID_TAGS: ["base", "form", "iframe", "object", "embed", "script", "style", "link", "meta"],
       FORBID_ATTR: ["style", "srcset", "target"],
     });
+  }
+
+  function hasReadableContent(html, plain) {
+    if (plain.trim()) return true;
+    const parsed = new DOMParser().parseFromString(sanitizeEmailHtml(html), "text/html");
+    return Boolean(parsed.body.textContent?.trim() || parsed.body.querySelector('img[alt]:not([alt=""]), img[src^="data:"]'));
+  }
+
+  function safeEmailDocument(html) {
+    const clean = sanitizeEmailHtml(html);
     return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src 'none'; connect-src 'none'; media-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:15px/1.65 system-ui,sans-serif;color:#202b2a;margin:1.25rem;overflow-wrap:anywhere}img{max-width:100%;height:auto}table{max-width:100%;border-collapse:collapse}td,th{padding:.35rem;border:1px solid #bbb}</style></head><body>${clean}</body></html>`;
   }
 
@@ -286,6 +296,17 @@ if (root) {
         fields.append(row);
       }
       header.append(title, fields);
+
+      if (!hasReadableContent(html, plainValue)) {
+        const notice = document.createElement("p");
+        notice.className = "reader-unavailable";
+        notice.setAttribute("role", "status");
+        notice.textContent = "This email was received, but the provider returned no readable message content.";
+        reader.replaceChildren(header, notice);
+        if (message) message.read = true;
+        renderMessages();
+        return;
+      }
 
       const tabs = document.createElement("div");
       tabs.className = "reader-tabs";
